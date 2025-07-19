@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 
 # Replace with your Stability AI API Key
-API_KEY = "sk-MFaLzii2y0qn0Mf3Yyv1gOejEY9p3Go4sW1E9iUW91ccRjCn"
+API_KEY = "sk-1SPGJQVmsOjwDi08jbUYw9LyvktyHPjOPUqWJiPazLxECCfG"
 
 # API Endpoint (Image-to-Image)
 API_URL = "https://api.stability.ai/v2beta/stable-image/image-to-image/sd3"
