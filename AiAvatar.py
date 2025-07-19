@@ -25,7 +25,7 @@ if st.button("✨ Generate Avatar"):
 
         headers = {
             "Authorization": f"Bearer {API_KEY}",
-            "Accept": "image/png"
+            "Accept": "image/*"
         }
 
         files = {
