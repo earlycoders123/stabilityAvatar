@@ -1,62 +1,69 @@
 import streamlit as st
 import requests
-from PIL import Image
-from io import BytesIO
+import os
 
-# Replace with your actual Stability AI API Key
-API_KEY = "sk-CKhWMjp1UlaCFHOfyN45WehE8H13AlFp4kDk8PS4oUCxnnKE"
+# Set your Replicate API Key
+REPLICATE_API_TOKEN = "r8_6Db0E6KufdDLrKOvzlysrnPrmmDeDGS478dlQ"
+os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
 
-# Stability AI Image-to-Image endpoint
-API_URL = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
+# Streamlit App Setup
+st.set_page_config(page_title="AI Image Transformer", page_icon="🎨")
+st.title("🎨 AI Image-to-Image Transformer (Replicate API)")
+st.write("Upload a photo and pick a style to transform your image!")
 
-# Streamlit App
-st.title("🖼️ AI Image to Pencil Sketch Generator")
-st.write("Upload a photo and AI will convert it into a pencil sketch!")
+# Upload Image
+uploaded_image = st.file_uploader("📤 Upload your image", type=["jpg", "png"])
 
-# Upload image
-uploaded_image = st.file_uploader("📤 Upload your image here", type=["jpg", "jpeg", "png"])
+# Style Selection
+style_prompt = st.selectbox("🎭 Pick a style:", [
+    "Pencil sketch",
+    "Cartoon style",
+    "Watercolor painting",
+    "Black and white photo",
+    "Oil painting",
+    "Cyberpunk style"
+])
 
-# Generate Button
-if uploaded_image and st.button("🎨 Convert to Pencil Sketch"):
-    st.info("Generating your AI pencil sketch... Please wait!")
+# Transform Button
+if st.button("✨ Transform Image") and uploaded_image:
+    st.info("Processing your image... Please wait.")
 
-    # Headers
+    # Read image bytes
+    image_bytes = uploaded_image.read()
+
+    # Replicate API Request
+    api_url = "https://api.replicate.com/v1/predictions"
     headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Accept": "image/*"
+        "Authorization": f"Token {REPLICATE_API_TOKEN}",
+        "Content-Type": "application/json"
     }
 
-    # Prompt for transformation
-    prompt = "Transform this image into a realistic pencil sketch."
-
-    # Files for multipart/form-data
-    files = {
-        'mode': (None, 'image-to-image'),
-        'prompt': (None, prompt),
-        'strength': (None, '0.6'),  # Adjust strength as needed
-        'output_format': (None, 'png'),
-        'image': ('uploaded_image.png', uploaded_image, 'image/png')
+    # Example using SDXL model with image-to-image prompt
+    # Replace 'stability-ai/sdxl' with any other model endpoint if desired
+    data = {
+        "version": "db21e45b19b363682f014aadf1d95cf06db2a769de110b6c94a98e72eb37b3c1",  # SDXL Image-to-Image Version
+        "input": {
+            "image": f"data:image/png;base64,{image_bytes.decode('latin1')}",
+            "prompt": f"Transform this image into a {style_prompt.lower()}."
+        }
     }
 
-    # API Request
-    response = requests.post(API_URL, headers=headers, files=files)
+    response = requests.post(api_url, headers=headers, json=data)
 
-    # Handle API Response
-    if response.status_code == 200:
-        image = Image.open(BytesIO(response.content))
-        st.image(image, caption="🎉 Here’s your AI Pencil Sketch!")
+    if response.status_code == 201:
+        output_url = response.json()["urls"]["get"]
+        st.success("✅ Image generated! Fetching your result...")
 
-        st.download_button(
-            "📥 Download Sketch",
-            response.content,
-            "pencil_sketch.png",
-            "image/png"
-        )
+        # Polling or directly display if available:
+        st.image(output_url, caption=f"🎉 Transformed Image: {style_prompt}")
+
+        st.write(f"[🔗 View Full Image]({output_url})")
+
     else:
-        st.error("❌ Failed to generate image.")
-        try:
-            st.json(response.json())
-        except:
-            st.write(response.content)
+        st.error(f"❌ Failed to transform image. Status Code: {response.status_code}")
+        st.json(response.json())
 
-st.caption("Made with ❤️ using Stability AI and Streamlit")
+else:
+    st.warning("Please upload an image and pick a style.")
+
+st.caption("Made with ❤️ using Replicate + Streamlit")
