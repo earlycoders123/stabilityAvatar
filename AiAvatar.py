@@ -4,7 +4,7 @@ from PIL import Image
 from io import BytesIO
 
 # Your Stability AI API Key (store securely)
-API_KEY = "sk-hoj2Vs052934motGmBmOGY3IfBQzbz43p7vehZgLng6D1a5M"
+API_KEY = "sk-UlV2FBiaFLNm2b2sJdA2yda5Tb9pz8NRws6A9srbUYv1IL9d"
 
 # Stability AI Endpoint
 API_URL = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
@@ -25,7 +25,7 @@ uploaded_image = st.file_uploader("📷 Upload an image:", type=["png", "jpg", "
 
 # Choose Style / Transformation
 style = st.selectbox("🎭 Choose transformation style:", [
-    "Cartoon Style", "Sketch Drawing", "Oil Painting", "Happy Face", "Sad Face", "Fantasy Art"
+    "Cartoon Style", "Anime style", "Pixel Art", "Happy Face", "Sad Face", "Black and White Photo"
 ])
 
 # Generate Button
