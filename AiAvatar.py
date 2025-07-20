@@ -4,7 +4,7 @@ import os
 
 # Set your Replicate API Key
 REPLICATE_API_TOKEN = "r8_6Db0E6KufdDLrKOvzlysrnPrmmDeDGS478dlQ"
-REPLICATE_API_TOKEN = st.secrets["r8_6Db0E6KufdDLrKOvzlysrnPrmmDeDGS478dlQ"]
+REPLICATE_API_TOKEN = st.secrets["REPLICATE_API_TOKEN"]
 os.environ["REPLICATE_API_TOKEN"] = REPLICATE_API_TOKEN
 
 # Streamlit App Setup
