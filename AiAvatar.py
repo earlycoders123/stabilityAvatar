@@ -3,21 +3,21 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-# Replace with your Stability AI API key
+# Replace with your Stability AI API Key
 API_KEY = "sk-hoj2Vs052934motGmBmOGY3IfBQzbz43p7vehZgLng6D1a5M"
 
-# Stability AI Image-to-Image Endpoint
+# Stability AI API Endpoint
 API_URL = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
 
-# Set Streamlit Page
+# Streamlit UI Setup
 st.set_page_config(page_title="Image-to-Image Generator", page_icon="🎨")
 st.title("🎨 AI Image-to-Image Generator using Stability AI")
 st.write("Upload an image and let AI transform it!")
 
-# File uploader
+# Image Upload
 uploaded_image = st.file_uploader("📤 Upload your image (JPG/PNG):", type=["jpg", "jpeg", "png"])
 
-# Prompt box
+# Prompt Input
 prompt = st.text_input("📝 Describe how AI should modify your image:")
 
 # Generate Button
@@ -28,20 +28,21 @@ if st.button("✨ Generate Image"):
         # Read image bytes
         image_bytes = uploaded_image.read()
 
-        # Headers (Important: Accept must be image/*)
+        # Headers
         headers = {
             "Authorization": f"Bearer {API_KEY}",
-            "Accept": "image/*",                    # ✅ FIXED Accept Header
+            "Accept": "image/*"  # Expecting image as output
         }
 
-        # Payload as multipart/form-data
+        # Files for multipart/form-data (IMPORTANT: include mode)
         files = {
             'image': ('image.png', image_bytes, 'image/png'),
             'prompt': (None, prompt),
-            'output_format': (None, 'png')
+            'output_format': (None, 'png'),
+            'mode': (None, 'image-to-image')   # ✅ CRITICAL FIX
         }
 
-        # Make API request
+        # API Call
         response = requests.post(API_URL, headers=headers, files=files)
 
         # Handle API Response
@@ -56,7 +57,7 @@ if st.button("✨ Generate Image"):
             except:
                 st.text(response.text)
     else:
-        st.warning("Please upload an image and enter a description!")
+        st.warning("Please upload an image and describe the transformation.")
 
 # Footer
 st.caption("Made with ❤️ using Stability AI and Streamlit")
