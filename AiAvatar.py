@@ -3,64 +3,60 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-# Your Stability AI API Key (store securely)
-API_KEY = "sk-UlV2FBiaFLNm2b2sJdA2yda5Tb9pz8NRws6A9srbUYv1IL9d"
+# Replace with your actual Stability AI API Key
+API_KEY = "sk-hoj2Vs052934motGmBmOGY3IfBQzbz43p7vehZgLng6D1a5M"
 
-# Stability AI Endpoint
+# Stability AI Image-to-Image endpoint
 API_URL = "https://api.stability.ai/v2beta/stable-image/generate/sd3"
 
-# Headers
-headers = {
-    "Authorization": f"Bearer {API_KEY}",
-    "Accept": "image/*"
-}
-
 # Streamlit App
-st.set_page_config(page_title="AI Image-to-Image Generator", page_icon="🎨")
-st.title("🎨 AI Image-to-Image Generator Tool")
-st.write("Upload your image and choose a style or transformation!")
+st.title("🖼️ AI Image to Pencil Sketch Generator")
+st.write("Upload a photo and AI will convert it into a pencil sketch!")
 
-# Upload Image
-uploaded_image = st.file_uploader("📷 Upload an image:", type=["png", "jpg", "jpeg"])
-
-# Choose Style / Transformation
-style = st.selectbox("🎭 Choose transformation style:", [
-    "Cartoon Style", "Anime style", "Pixel Art", "Happy Face", "Sad Face", "Black and White Photo"
-])
+# Upload image
+uploaded_image = st.file_uploader("📤 Upload your image here", type=["jpg", "jpeg", "png"])
 
 # Generate Button
-if st.button("✨ Generate Image"):
-    if uploaded_image:
-        prompt = f"Convert this image into {style.lower()}."
+if uploaded_image and st.button("🎨 Convert to Pencil Sketch"):
+    st.info("Generating your AI pencil sketch... Please wait!")
 
-        files = {
-            'mode': (None, 'image-to-image'),
-            'prompt': (None, prompt),
-            'strength': (None, '0.5'),
-            'output_format': (None, 'png'),
-            'image': ('input.png', uploaded_image, 'image/png')
-        }
+    # Headers
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+        "Accept": "image/*"
+    }
 
-        with st.spinner("Generating your transformed image..."):
-            response = requests.post(API_URL, headers=headers, files=files)
+    # Prompt for transformation
+    prompt = "Transform this image into a realistic pencil sketch."
 
-            if response.status_code == 200:
-                image = Image.open(BytesIO(response.content))
-                st.image(image, caption=f"Here’s your {style} image!")
+    # Files for multipart/form-data
+    files = {
+        'mode': (None, 'image-to-image'),
+        'prompt': (None, prompt),
+        'strength': (None, '0.6'),  # Adjust strength as needed
+        'output_format': (None, 'png'),
+        'image': ('uploaded_image.png', uploaded_image, 'image/png')
+    }
 
-                st.download_button(
-                    "📥 Download Image",
-                    data=response.content,
-                    file_name="generated_image.png",
-                    mime="image/png"
-                )
-            else:
-                st.error(f"❌ Failed to generate image. Status Code: {response.status_code}")
-                try:
-                    st.json(response.json())
-                except:
-                    st.write(response.text)
+    # API Request
+    response = requests.post(API_URL, headers=headers, files=files)
+
+    # Handle API Response
+    if response.status_code == 200:
+        image = Image.open(BytesIO(response.content))
+        st.image(image, caption="🎉 Here’s your AI Pencil Sketch!")
+
+        st.download_button(
+            "📥 Download Sketch",
+            response.content,
+            "pencil_sketch.png",
+            "image/png"
+        )
     else:
-        st.warning("Please upload an image first!")
+        st.error("❌ Failed to generate image.")
+        try:
+            st.json(response.json())
+        except:
+            st.write(response.content)
 
 st.caption("Made with ❤️ using Stability AI and Streamlit")
