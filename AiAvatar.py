@@ -36,10 +36,11 @@ if st.button("✨ Generate Image"):
 
         # Files for multipart/form-data (IMPORTANT: include mode)
         files = {
-            'image': ('image.png', image_bytes, 'image/png'),
+            'mode': (None, 'image-to-image'),
             'prompt': (None, prompt),
+            'strength': (None, '0.5'),  # Adjust between 0.0 and 1.0
             'output_format': (None, 'png'),
-            'mode': (None, 'image-to-image')   # ✅ CRITICAL FIX
+            'image': ('input.png', image_file, 'image/png')  # Uploaded file
         }
 
         # API Call
