@@ -40,7 +40,7 @@ if st.button("✨ Generate Image"):
             'prompt': (None, prompt),
             'strength': (None, '0.5'),  # Adjust between 0.0 and 1.0
             'output_format': (None, 'png'),
-            'image': ('input.png', image_file, 'image/png')  # Uploaded file
+            'image': ('input.png', uploaded_image, 'image/png')  # Uploaded file
         }
 
         # API Call
