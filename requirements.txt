@@ -1,6 +1,2 @@
 streamlit
-torch
-transformers
-bark
-scipy
-numpy
+google-generativeai
