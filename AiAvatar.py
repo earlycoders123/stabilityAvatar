@@ -1,25 +1,30 @@
 import streamlit as st
-from TTS.api import TTS
+from bark import SAMPLE_RATE, generate_audio
+import numpy as np
+import scipy.io.wavfile
 
-# Load the TTS model (this may take some time when first run)
-tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False)
-
-# Streamlit UI
-st.set_page_config(page_title="🎙️ AI Text to Speech Tool")
-st.title("🎙️ AI Text-to-Speech Generator")
-st.write("Type your sentence and listen!")
+st.set_page_config(page_title="🎙️ GenAI Text-to-Speech with Bark")
+st.title("🎙️ Bark GenAI Text-to-Speech")
+st.write("Type your sentence and listen! AI will generate human-like speech.")
 
 # Text input
-text = st.text_input("📝 Enter your text:")
+text = st.text_area("📝 Enter your text:")
 
 # Generate speech button
 if st.button("🎧 Generate Speech"):
     if text.strip():
-        with st.spinner("Generating speech..."):
-            # Save the output audio
-            tts.tts_to_file(text=text, file_path="output.wav")
-            audio_file = open("output.wav", "rb")
-            st.audio(audio_file.read(), format="audio/wav")
-            st.success("✅ Speech generated!")
+        with st.spinner("AI is generating speech..."):
+            audio_array = generate_audio(text)
+            wav_file = "bark_output.wav"
+            scipy.io.wavfile.write(wav_file, SAMPLE_RATE, audio_array)
+
+            # Play audio
+            st.audio(wav_file)
+
+            # Download button
+            with open(wav_file, "rb") as audio_file:
+                st.download_button("📥 Download Speech", audio_file, file_name="speech.wav")
+
+            st.success("✅ Done! Generated using Bark AI.")
     else:
-        st.warning("Please enter some text.")
+        st.warning("Please enter some text!")
