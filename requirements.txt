@@ -1,4 +1,4 @@
 streamlit
-TTS
+TTS==0.17.1
 torch
 numpy
