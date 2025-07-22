@@ -1,2 +1,4 @@
 streamlit
 TTS
+torch
+numpy
