@@ -1,4 +1,4 @@
 streamlit
-TTS==0.17.1
+transformers
 torch
-numpy
+bark
